@@ -2,17 +2,25 @@ class Translator
   START_CODON = "ATG"
   STOP_CODONS = ["TAA", "TGA", "TAG"]
   NULL_CHAR = "#"
-  MAP = {"AAA" => "K1", "AAG" => "K2", "AAT" => "N1", "AAC" => "N2", "ACA" => "T1", "ACC" => "T2", "ACG" => "T3", "ACT" => "T4",
-         "AGA" => "R1", "AGC" => "R2", "AGG" => "R3", "AGT" => "R4", "ATA" => "I1", "ATC" => "I2", "ATG" => "M", "ATT" => "I3", 
-         "CAA" => "Q1", "CAC" => "H1", "CAG" => "Q2", "CAT" => "H2", "CCA" => "P1", "CCC" => "P2", "CCG" => "P3", "CCT" => "P4",
-         "CGA" => "R3", "CGC" => "R4", "CGG" => "R5", "CGT" => "R6", "CTA" => "L1", "CTC" => "L2", "CTG" => "L3", "CTT" => "L4",
-         "GAA" => "E1", "GAC" => "D1", "GAG" => "E2", "GAT" => "D2", "GCA" => "A1", "GCC" => "A2", "GCG" => "A3", "GCT" => "A4",
-         "GGA" => "G1", "GGC" => "G2", "GGG" => "G3", "GGT" => "G4", "GTA" => "V1", "GTC" => "V2", "GTG" => "V3", "GTT" => "V4",
-         "TAA" => NULL_CHAR, "TAC" => "Y1", "TAG" => NULL_CHAR, "TAT" => "Y2", "TCA" => "S1", "TCC" => "S2", "TCG" => "S3", "TCT" => "S4",
-         "TGA" => NULL_CHAR, "TGC" => "C1", "TGG" => "W", "TGT" => "C2", "TTA" => "L5", "TTC" => "F1", "TTG" => "L6", "TTT" => "F2"}
+  MAP = {"AAA" => "K1", "AAG" => "K1", "AAT" => "N1", "AAC" => "N1", "ACA" => "T2", "ACC" => "T1", "ACG" => "T3", "ACT" => "T1",
+         "AGA" => "R3", "AGC" => "S4", "AGG" => "R4", "AGT" => "S4", "ATA" => "I2", "ATC" => "I1", "ATG" => "M", "ATT" => "I1", 
+         "CAA" => "Q1", "CAC" => "H1", "CAG" => "Q1", "CAT" => "H1", "CCA" => "P2", "CCC" => "P1", "CCG" => "P2", "CCT" => "P1",
+         "CGA" => "R1", "CGC" => "R1", "CGG" => "R2", "CGT" => "R1", "CTA" => "L4", "CTC" => "L3", "CTG" => "L4", "CTT" => "L3",
+         "GAA" => "E1", "GAC" => "D1", "GAG" => "E1", "GAT" => "D1", "GCA" => "A2", "GCC" => "A1", "GCG" => "A2", "GCT" => "A1",
+         "GGA" => "G2", "GGC" => "G1", "GGG" => "G3", "GGT" => "G1", "GTA" => "V2", "GTC" => "V1", "GTG" => "V3", "GTT" => "V1",
+         "TAA" => NULL_CHAR, "TAC" => "Y1", "TAG" => NULL_CHAR, "TAT" => "Y1", "TCA" => "S2", "TCC" => "S1", "TCG" => "S3", "TCT" => "S1",
+         "TGA" => NULL_CHAR, "TGC" => "C1", "TGG" => "W", "TGT" => "C1", "TTA" => "L1", "TTC" => "F1", "TTG" => "L2", "TTT" => "F1"}
   
   attr_accessor :sequence
   attr_accessor :stuff
+  
+  def initialize(afile = nil)
+    if afile
+      lines = File.open(afile, "r").readlines
+      lines = lines.join.gsub("\n", "")
+      @sequence = lines
+    end
+  end
   
   def to_protein
     protein_sequence = ""
@@ -80,11 +88,27 @@ class Translator
     sum / max_autocorrelation_score_for(char)
   end
   
+  def total_autocorrelation
+    total_codons = 0
+    total_score = 0.to_f
+    ["A", "R", "G", "I", "L", "P", "S", "T", "V"].each do |amino_acid|
+      total_codons += codons_for(amino_acid)
+      total_score += codons_for(amino_acid).to_f * autocorrelation_score_for(amino_acid)
+    end
+    return ((total_score.to_f)/(total_codons.to_f)).to_f
+  end
+  
+  def codons_for(codon)
+    sequence = to_protein
+    my_regex = Regexp.new("[^#{codon}]")
+    to_protein.gsub(my_regex, "").size
+  end
+  
   def distance(pos1, pos2)
     ((pos2 - pos1).abs)+1
   end
   
   def distance_score(pos1, pos2)
-    Rational(1, distance(pos1, pos2))
+    Rational(1, distance(pos1, pos2)).to_f
   end
 end

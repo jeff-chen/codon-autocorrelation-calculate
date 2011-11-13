@@ -30,7 +30,20 @@ describe Translator do
   end
   
   it 'autocorrelates mixed cases correctly' do
-    @translator.sequence = "ATGAAAAAAAAGTAA"
-    @translator.autocorrelation_score_for("K").to_f.should == Rational(-1,4).to_f #1/2 - 1/2 - 1/3 / 1/2 + 1/2 + 1/3 = (-1/3)/(4/3)
+    @translator.sequence = "ATGCCCCCCCCGTAA"
+    @translator.autocorrelation_score_for("P").to_f.should == Rational(-1,4).to_f #1/2 - 1/2 - 1/3 / 1/2 + 1/2 + 1/3 = (-1/3)/(4/3)
+  end
+  
+  it 'can find how often a given amino acid occurs' do
+    @translator.sequence = "ATGAAAAAAAAACGGAGGTAA"
+    @translator.codons_for("M").should == 1
+    @translator.codons_for("K").should == 3
+    @translator.codons_for("R").should == 2
+  end
+  
+  it 'calculates a total correlation score' do
+    @translator.sequence = "ATGGGTGGTGGTCGGAGGTAA"
+    @translator.total_autocorrelation.to_f.should == Rational(1,5).to_f #3/5 from complete auto, -2/5 from other
+    
   end
 end

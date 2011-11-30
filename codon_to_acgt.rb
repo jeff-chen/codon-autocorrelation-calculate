@@ -14,10 +14,13 @@ sequence.split('').each do |char|
 end
 
 require 'translator' 
+require 'root_distance_translator'
+require 'log_distance_translator'
 require 'rational'
+
 puts blah.inspect
 
-t = Translator.new
+t = RootDistanceTranslator.new
 
 t.sequence = blah
 

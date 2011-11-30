@@ -1,4 +1,5 @@
 require 'translator'
+require 'log_distance_translator'
 
 describe Translator do
   before do
@@ -15,13 +16,18 @@ describe Translator do
   end
   
   it 'grabs all tRNAs of a specific type' do
-    @translator.sequence = "ATGAAAAAAAAAAAAAAATAA"
-    @translator.trna_indices_for("K").should == [1,2,3,4,5]
+    @translator.sequence = "ATGGGTGGTGGTGGTGGTTAA"
+    @translator.trna_indices_for("G").should == [1,2,3,4,5]
   end
   
   it 'autocorrelates the uniform case correctly' do
-    @translator.sequence = "ATGAAAAAAAAAAAAAAATAA"
-    @translator.autocorrelation_score_for("K").should == 1
+    @translator.sequence = "ATGGGTGGTGGTGGTGGTTAA"
+    @translator.autocorrelation_score_for("G").should == 1
+  end
+  
+  it 'calculates -1 for a perfectly unique codon for each position' do
+    @translator.sequence = "ATGTCGAGCTCCTCATAA"
+    @translator.autocorrelation_score_for("S").should == -1
   end
   
   it 'autocorrelates the maximum case correctly' do
@@ -44,6 +50,20 @@ describe Translator do
   it 'calculates a total correlation score' do
     @translator.sequence = "ATGGGTGGTGGTCGGAGGTAA"
     @translator.total_autocorrelation.to_f.should == Rational(1,5).to_f #3/5 from complete auto, -2/5 from other
-    
+  end
+end
+
+describe LogDistanceTranslator do
+  before do
+    @translator = LogDistanceTranslator.new
+  end
+  it 'still calculates 1 for perfectly redundant and autocorrelated sequences' do
+    @translator.sequence = "ATGGGTGGTGGTGGTGGTTAA"
+    @translator.autocorrelation_score_for("G").should == 1
+  end
+  
+  it 'calculates -1 for a perfectly unique codon for each position' do
+    @translator.sequence = "ATGTCGAGCTCCTCATAA"
+    @translator.autocorrelation_score_for("S").should == -1
   end
 end

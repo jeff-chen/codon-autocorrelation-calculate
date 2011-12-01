@@ -11,6 +11,8 @@ class Translator
          "TAA" => NULL_CHAR, "TAC" => "Y1", "TAG" => NULL_CHAR, "TAT" => "Y1", "TCA" => "S2", "TCC" => "S1", "TCG" => "S3", "TCT" => "S1",
          "TGA" => NULL_CHAR, "TGC" => "C1", "TGG" => "W", "TGT" => "C1", "TTA" => "L1", "TTC" => "F1", "TTG" => "L2", "TTT" => "F1"}
   
+  SYNONYMOUS_AMINO_ACIDS = ["A", "R", "G", "I", "L", "P", "S", "T", "V"]
+  
   attr_accessor :sequence
   attr_accessor :stuff
   
@@ -37,6 +39,44 @@ class Translator
       @stuff << MAP[abc]
     end
     @stuff
+  end
+  
+  def matched_distances
+    distances = []
+    SYNONYMOUS_AMINO_ACIDS.each do |char|
+      things_indices = trna_indices_for(char)
+      0.upto(things_indices.size-1) do |i|
+        (i+1).upto(things_indices.size-1) do |j|
+          if trnas[things_indices[i]] == trnas[things_indices[j]]
+            distances << distance(things_indices[i], things_indices[j])
+          end
+        end
+      end
+    end
+    return distances
+  end
+  
+  def mismatched_distances
+    distances = []
+    SYNONYMOUS_AMINO_ACIDS.each do |char|
+      things_indices = trna_indices_for(char)
+      0.upto(things_indices.size-1) do |i|
+        (i+1).upto(things_indices.size-1) do |j|
+          if trnas[things_indices[i]] != trnas[things_indices[j]]
+            distances << distance(things_indices[i], things_indices[j])
+          end
+        end
+      end
+    end
+    return distances
+  end
+  
+  def matched_distance_average
+    (matched_distances.inject{|sum, element| sum+element}.to_f / matched_distances.size).to_f
+  end
+  
+  def mismatched_distance_average
+    (mismatched_distances.inject{|sum, element| sum+element}.to_f / mismatched_distances.size).to_f
   end
   
   def trna_indices_for(char)
@@ -91,7 +131,7 @@ class Translator
   def total_autocorrelation
     total_codons = 0
     total_score = 0.to_f
-    ["A", "R", "G", "I", "L", "P", "S", "T", "V"].each do |amino_acid|
+    SYNONYMOUS_AMINO_ACIDS.each do |amino_acid|
       total_codons += codons_for(amino_acid)
       total_score += codons_for(amino_acid).to_f * autocorrelation_score_for(amino_acid)
     end

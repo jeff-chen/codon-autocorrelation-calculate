@@ -24,7 +24,11 @@ ARGV.each do |filename|
     if blah.sequence
       genes += 1
       sum += blah.total_autocorrelation
-      puts blah.total_autocorrelation.inspect if blah.sequence
+      #puts blah.total_autocorrelation.inspect if blah.sequence
+      puts "dica: #{blah.total_autocorrelation.inspect}"
+      #puts blah.matched_distances.inspect
+      puts "matched: #{blah.matched_distance_average}"
+      puts "mismatched: #{blah.mismatched_distance_average}"
     end
   end
   puts "THe average is::::"

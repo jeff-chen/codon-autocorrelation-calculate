@@ -51,6 +51,32 @@ describe Translator do
     @translator.sequence = "ATGGGTGGTGGTCGGAGGTAA"
     @translator.total_autocorrelation.to_f.should == Rational(1,5).to_f #3/5 from complete auto, -2/5 from other
   end
+  
+  describe 'matched and mismatched distances' do
+    it 'finds the distances between matched synonymous codons as well as mismatches' do
+      @translator.sequence = "ATGGGTGGTGGTCGGAGGTAA"
+      @translator.matched_distances.should == [2,3,2]
+      @translator.mismatched_distances.should == [2]
+    end
+    
+    it 'correctly incorporates information from different amino acids' do
+      @translator.sequence = "ATGGGTGGGGGTCGGAGGCGGTAA"
+      @translator.matched_distances.should == [3,3]
+      @translator.mismatched_distances.should == [2,2,2,2]
+    end
+    
+    it 'does not include amino acids if a particular one occurs only once' do
+      @translator.sequence = "ATGGGTGGGGGTCGGTAA"
+      @translator.matched_distances.should == [3]
+      @translator.mismatched_distances.should == [2,2]
+    end
+    
+    it 'gets the average match distance' do
+      @translator.sequence = "ATGGGTGGTGGTCGGAGGTAA"
+      @translator.matched_distance_average.to_f.should == Rational(7,3).to_f
+      @translator.mismatched_distance_average.to_f.should == Rational(2,1).to_f
+    end
+  end
 end
 
 describe LogDistanceTranslator do

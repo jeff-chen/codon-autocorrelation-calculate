@@ -1,0 +1,2 @@
+require 'gene_scrambler'
+

@@ -76,6 +76,41 @@ describe Translator do
       @translator.matched_distance_average.to_f.should == Rational(7,3).to_f
       @translator.mismatched_distance_average.to_f.should == Rational(2,1).to_f
     end
+    
+    it 'gets a sorted hash of how often each match occurs' do
+      @translator.sequence = "ATGGGTGGTGGTCGGAGGTAA"
+      @translator.matched_distances.should == [2,3,2]
+      @translator.matched_distance_distribution.should == [[2,2],[3,1]]
+    end
+    
+    describe 'distribution_to_hash' do
+      it 'makes a histogram of elements in an array' do
+        @translator.distribution_to_hash([2,2,3,4]).should == {"2" => 2, "3" => 1, "4" => 1}
+      end
+    end
+    
+    describe 'match/mismatch ratio' do
+      it 'calculates the match and mismatch ratio of each distance relative to the distance at 2' do
+        @translator.sequence = "ATGGGTGGTGGTCGGAGGTAA"
+        #@translator.matched_distances.should == [2,3,2]
+        #@translator.mismatched_distances.should == [2]
+        #the ratio of 2 is 2/3, 3 is 1
+        @translator.ratios.should == [[2,Rational(2,3).to_f], [3,1.0]]
+      end
+      
+      it 'gets the normalized ratios' do
+        @translator.sequence = "ATGGGTGGTGGTCGGAGGTAA"
+        #2/3 / 2/3, 1 / 2/3
+        @translator.normalized_ratios.should == [[2,1.0], [3,Rational(3,2).to_f]]
+      end
+      
+      it 'seperates the normalized ratios in csv format if there is a hole' do
+        @translator.sequence = "ATGGGTGGTGGTCGGAGGTAA"
+        @translator.normalized_ratios_csv.should == "1.0,1.5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
+      end
+      
+    end
+    
   end
 end
 

@@ -99,7 +99,6 @@ class Translator
   def normalized_ratios_csv
     line = ""
     things = normalized_ratios
-    puts things.inspect
     2.upto(50) do |i|
       ratio = things.select{|x| x[0] == i}.first
       if ratio     
@@ -160,75 +159,26 @@ class Translator
   end
   
   def trna_indices_for(char)
-    things_to_check = []
-    trnas.each_index do |i|
-      things_to_check << i if trnas[i] =~ Regexp.new("^" + char, true)
-    end
-    things_to_check
+    indices_from_trna_of(char, trnas)
   end
   
   def max_autocorrelation_score_for(char)
-    things_indices = trna_indices_for(char)
-    sum = 0
-    return 1 if things_indices.size < 2 
-    0.upto(things_indices.size-1) do |i|
-      (i+1).upto(things_indices.size-1) do |j|
-        sum = sum + distance_score(things_indices[i], things_indices[j])
-      end
-    end
-    sum
-  end
-  
-  def min_autocorrelation_score_for(char)
-    things_indices = trna_indices_for(char)
-    sum = 0
-    return 1 if things_indices.size < 2 
-    0.upto(things_indices.size-1) do |i|
-      (i+1).upto(things_indices.size-1) do |j|
-        sum = sum - distance_score(things_indices[i], things_indices[j])
-      end
-    end
-    sum
-  end
-  
-  def autocorrelation_score_for(char)
-    things_indices = trna_indices_for(char)
-    sum = 0
-    return 1 if things_indices.size < 2 #it won't matter if there are no amino acids
-    0.upto(things_indices.size-1) do |i|
-      (i+1).upto(things_indices.size-1) do |j|
-       # puts distance_score(things_indices[i], things_indices[j]).inspect
-        if trnas[things_indices[i]] == trnas[things_indices[j]]
-          sum = sum + distance_score(things_indices[i], things_indices[j])
-        else
-          sum = sum - distance_score(things_indices[i], things_indices[j])
-        end
-      end
-    end
-    sum / max_autocorrelation_score_for(char)
+    max_autocorrelation_score(char, trnas)
   end
   
   def total_autocorrelation
-    total_codons = 0
-    total_score = 0.to_f
-    SYNONYMOUS_AMINO_ACIDS.each do |amino_acid|
-      total_codons += codons_for(amino_acid)
-      total_score += codons_for(amino_acid).to_f * autocorrelation_score_for(amino_acid)
-    end
-    return ((total_score.to_f)/(total_codons.to_f)).to_f
+    dica_for(trnas)
+  end
+  
+
+  def autocorrelation_score_for(char)
+    autocorrelation_score(char, trnas)
   end
   
   def codons_for(codon)
-    sequence = to_protein
-    my_regex = Regexp.new("[^#{codon}]")
-    to_protein.gsub(my_regex, "").size
+    codons_for_codon_and_trnas(codon, trnas)
   end
   
-  def distance(pos1, pos2)
-    ((pos2 - pos1).abs)+1
-  end
-  
-  def distance_score(pos1, pos2)
-    Rational(1, distance(pos1, pos2)).to_f
-  end
+
+
 end

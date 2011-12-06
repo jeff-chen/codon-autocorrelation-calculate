@@ -29,9 +29,8 @@ class GeneScrambler
     translator.trnas.select{|i| i =~ Regexp.new("^" + trna, true)}.compact
   end
   
-  def shuffled_translator
-    t = Translator.new
-    t.
+  def randomized_dica
+    dica_for(shuffled_trnas)
   end
   
   def scrambled_trnas_of(trna)

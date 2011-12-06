@@ -37,9 +37,10 @@ describe GeneScrambler do
     @scrambler.scrambled_trnas_of("V").should == []
   end
   
-  it 'creates a new translator object as necessary' do
-    @t2 = @scrambler.shuffled_translator
-    @t2.trna.should == ["M", "G1", "G1", "G3", "R2", "R2", "R4", "#"]
+  it 'calculates the trnas of a shuffled translator as necessary' do
+    @scrambler.randomized_dica.to_f.should == Rational(-1,4).to_f #contribution of each is -1/4
+    #@t2 = @scrambler.shuffled_translator
+    #@t2.trnas.should == ["M", "G1", "G1", "G3", "R2", "R2", "R4", "#"]
   end
   
   

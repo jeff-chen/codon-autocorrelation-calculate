@@ -169,7 +169,6 @@ class Translator
   def total_autocorrelation
     dica_for(trnas)
   end
-  
 
   def autocorrelation_score_for(char)
     autocorrelation_score(char, trnas)
@@ -178,7 +177,5 @@ class Translator
   def codons_for(codon)
     codons_for_codon_and_trnas(codon, trnas)
   end
-  
-
 
 end

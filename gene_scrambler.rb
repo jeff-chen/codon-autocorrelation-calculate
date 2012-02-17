@@ -36,4 +36,39 @@ class GeneScrambler
   def scrambled_trnas_of(trna)
     original_trnas_of(trna).shuffle
   end
+  
+  def trna_transitions_of(trna)
+    count_transitions(original_trnas_of(trna))
+  end
+  
+  def count_transitions(trnas)
+    transitions = 0
+    trnas.each_with_index do |t, i|
+      if trnas[i+1]
+        transitions += 1 if trnas[i+1] != t
+      end
+    end
+    transitions
+  end
+  
+  def scrambled_trna_transitions_of(trna)
+    count_transitions(scrambled_trnas_of(trna))
+  end
+  
+  def scrambled_trna_transitions
+    total = 0
+    SYNONYMOUS_AMINO_ACIDS.each do |acid|
+      total += scrambled_trna_transitions_of(acid)
+    end
+    total
+  end
+  
+  def trna_transitions
+    total = 0
+    SYNONYMOUS_AMINO_ACIDS.each do |acid|
+      total += trna_transitions_of(acid)
+    end
+    total
+  end
+
 end

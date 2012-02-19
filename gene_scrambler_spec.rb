@@ -37,17 +37,23 @@ describe GeneScrambler do
     @scrambler.scrambled_trnas_of("V").should == []
   end
   
-  it 'counts the trna transitions' do
-    @scrambler.trna_transitions_of("G").should == 2 #G1 - G3 - G1
-    @scrambler.trna_transitions_of("R").should == 2
-    @scrambler.trna_transitions.should == 4 #2+2 = 4!
+  it 'calculates the number of randomized sequences it beats and returns the number as a percentage from 1 to 100' do
+    @scrambler.random_percentile.should == 0
   end
+  #this has been moved to a different file
   
-  it 'scrambles and counts the trna transitions' do
-    @scrambler.scrambled_trna_transitions_of("G").should == 1 #G1 - G1 - G3
-    @scrambler.scrambled_trna_transitions_of("R").should == 1
-    @scrambler.scrambled_trna_transitions.should == 2 #1+1 = 2!
-  end
+  #it 'counts the trna transitions' do
+  #  @scrambler.trna_transitions_of("G").should == 2 #G1 - G3 - G1
+  #  @scrambler.trna_transitions_of("R").should == 2
+  #  @scrambler.trna_transitions.should == 4 #2+2 = 4!
+  #end
+  
+  
+  #it 'scrambles and counts the trna transitions' do
+  #  @scrambler.scrambled_trna_transitions_of("G").should == 1 #G1 - G1 - G3
+  #  @scrambler.scrambled_trna_transitions_of("R").should == 1
+  #  @scrambler.scrambled_trna_transitions.should == 2 #1+1 = 2!
+  #end
   
   it 'calculates the trnas of a shuffled translator as necessary' do
     @scrambler.randomized_dica.to_f.should == Rational(-1,4).to_f #contribution of each is -1/4
